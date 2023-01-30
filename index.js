@@ -1,15 +1,25 @@
 const {
   pathExist,
+  toAbsolute,
+  mdFile,
+  readFiles,
 } = require('./functions')
 
 const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
     // la ruta existe?
     if (!pathExist(path)) {
-    reject(new Error('la ruta no existe'));  // si no existe la ruta rechaza la promesa
+    reject('la ruta no existe');  // si no existe la ruta rechaza la promesa
       } else {
-      console.log('la ruta SI existe');// si existe la ruta resuelve la promesa 
-      //identificar si la ruta es relativa o absoluta
+        console.log(pathExist(path));
+       const absolutePath = toAbsolute(path); // funcion convierte a absoluta
+       if (!mdFile(absolutePath)) {
+        reject('el archivo no es .md') // rechaza si no es un archivo .md
+       } else {
+        console.log(mdFile(absolutePath))
+        readFiles(absolutePath); // funcion que lee el archivo
+       }
+      
     }
 
     
