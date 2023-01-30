@@ -8,5 +8,32 @@
     "createdAt": "2022-11-16T21:49:06.371Z",
     "version": "5.4.0",
     "commit": "14aeca030be012fc987dcb1c604bbbcb0fdd325e"
-  }
+  },
+  "description": "Libreria que analiza archivos Markdown, busca si tiene links y si estos funcionan",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "jest": "^29.3.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuisaRojasH/DEV001-md-links.git"
+  },
+  "keywords": [
+    "md-links",
+    "node",
+    "Markdown"
+  ],
+  "author": "Luisa F Rojas",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuisaRojasH/DEV001-md-links/issues"
+  },
+  "homepage": "https://github.com/LuisaRojasH/DEV001-md-links#readme"
 }
