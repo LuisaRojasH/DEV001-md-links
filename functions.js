@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const axios = require('axios');
 
 // existe la ruta?
 const pathExist = (route) => fs.existsSync(route);
@@ -22,24 +23,28 @@ const mdFile = (absolutePath) => {
     }
 }
 
-// leer archivo
-const readFiles = (fileMd) => {
+// leer archivo y obtener links, retorna un array de objetos
+const readFiles = (mdFile) => {
     new Promise((resolve, reject) => {
-        fs.readFile(fileMd, 'utf-8', function (error, data) {
+        fs.readFile(mdFile, 'utf-8', (error, data) => {
             if (error) {
-                reject('Error');
+                reject(error);                
             } else {
-                resolve(data);
+                let arrayLinks = [];
+                const links = /\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g;
+            let match = links.exec(data);
+            while (match !== null) {
+                arrayLinks.push({
+                    href: match[2],
+                    text: match[1],
+                    file: mdFile,
+                });
+                match = links.exec(data)
             }
-        });
-    });
-};
-
-// obtener links
-const links = (fileMd) => {
-    new Promise ((resolve, reject) => {
-const arrayLinks = [];
-
+            resolve(arrayLinks);
+            console.log('links en archivo md', arrayLinks);
+            }
+        })
     })
 }
 
