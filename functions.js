@@ -23,34 +23,56 @@ const mdFile = (absolutePath) => {
     }
 }
 
-// leer archivo y obtener links, retorna un array de objetos
-const readFiles = (mdFile) => {
-    new Promise((resolve, reject) => {
-        fs.readFile(mdFile, 'utf-8', (error, data) => {
-            if (error) {
-                reject(error);                
-            } else {
-                let arrayLinks = [];
-                const links = /\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g;
-            let match = links.exec(data);
+// leer archivo
+const readFile = (mdFile) => new Promise((resolve, reject) => {
+    fs.readFile(mdFile, 'utf-8', (error, file) => {
+        if (error) {
+            reject(error);
+        } else {
+            resolve(file);
+        }
+    });
+});
+
+// obtener links, retorna un array de objetos
+const getLinks = (mdFile) => new Promise((resolve, reject) => {
+    const arrayLinks = [];
+    readFile(mdFile)
+        .then((file) => {
+            const links = /\[(.+?)\]\((https?:\/\/[^\s)]+)\)/g;
+            let match = links.exec(file);
             while (match !== null) {
                 arrayLinks.push({
                     href: match[2],
                     text: match[1],
                     file: mdFile,
                 });
-                match = links.exec(data)
+                match = links.exec(file)
             }
             resolve(arrayLinks);
-            console.log('links en archivo md', arrayLinks);
-            }
         })
+        .catch((error) => {
+            reject(error);
+        })
+});
+
+// validar links
+const validateLinks = (arrayLinks) => Promise.all(arrayLinks.map((link) => axios.get(link.href)
+    .then((response) => {
+        return { ...link, status: response.status, ok: response.statusText };
     })
-}
+    .catch((error) => {
+        if (error.response) {
+            return { ...link, status: error.response.status, ok: 'Fail' };
+        } else {
+            return { ...link, status: 'ERROR: ' + error.message, ok: 'Fail' };
+        }
+    })));
 
 module.exports = {
     pathExist,
     toAbsolute,
     mdFile,
-    readFiles,
+    getLinks,
+    validateLinks,
 }
