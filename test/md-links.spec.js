@@ -4,7 +4,9 @@ const {
   toAbsolute,
   mdFile,
   readFile,
-  getLinks } = require('../functions.js');
+  getLinks,
+  getStats,
+  getStatsAndValidate, } = require('../functions.js');
 const { axios } = require('axios');
 
 jest.mock('axios');
@@ -134,20 +136,57 @@ describe('getLinks', () => {
     getLinks(absolutePath).then(() => {
       expect(getLinks(absolutePath)).toBe(typeof Promise);
     })
-    .catch(() => { })
-      });
+      .catch(() => { })
   });
-  it('debe retornar array con objetos {href,text,file}', () => {
-    const file = [
-      {
-        href: 'https://es.wikipedia.org/wiki/Markdown',
-        text: 'Markdown',
-        file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md'
-      },
-    ]
-    getLinks(absolutePath).then((result) => {
-      expect(result).toEqual(file);
-    })
+});
+it('debe retornar array con objetos {href,text,file}', () => {
+  const file = [
+    {
+      href: 'https://es.wikipedia.org/wiki/Markdown',
+      text: 'Markdown',
+      file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md'
+    },
+  ]
+  getLinks(absolutePath).then((result) => {
+    expect(result).toEqual(file);
+  })
     .catch(() => { })
+});
+
+const links = [
+  {
+  href: 'https://es.wikipedia.org/wiki/Markdown',
+  text: 'Markdown',
+  file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md',
+  status: 200,
+  ok: 'OK'
+},
+{
+  href: 'https://developer.mozilla.org/es/docs/Learn/JavaScript/Building_blocks/Functions',
+  text: 'Funciones — bloques de código reutilizables - MDN',
+  file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\README.md',
+  status: 404,
+  ok: 'Fail'
+},
+];
+
+describe('getStats', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof getStats).toBe('function');
   });
+  it('debe retornar objeto con total y unique', () => {
+    const stats = { Total: 2, Unique: 2 };
+    expect(getStats(links)).toEqual(stats);
+  });
+});
+
+describe('getStatsAndValidate', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof getStatsAndValidate).toBe('function');
+  });
+  it('debe retornar objeto con total, unique y broken', () => {
+    const stats = { Total: 2, Unique: 2, Broken: 1 };
+    expect(getStatsAndValidate(links)).toEqual(stats);
+  });
+});
 
