@@ -73,6 +73,7 @@ module.exports = {
     pathExist,
     toAbsolute,
     mdFile,
+    readFile,
     getLinks,
     validateLinks,
 }

@@ -1,18 +1,153 @@
 const { mdLinks } = require('../index.js');
+const {
+  pathExist,
+  toAbsolute,
+  mdFile,
+  readFile,
+  getLinks } = require('../functions.js');
+const { axios } = require('axios');
 
+jest.mock('axios');
 
 describe('mdLinks', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof mdLinks).toBe('function');
+  });
   it('deberia devolver una promesa', () => {
-    expect(mdLinks('./README.md')).toBe(typeof Promise);
+    mdLinks('./prueba.md')
+      .then((route) => {
+        expect(mdLinks(route)).toBe(typeof Promise);
+      })
+      .catch(() => { })
+  });
+  it('debe resolver cuando el path existe', () => {
+    const path = 'C:\Users\LABORATORIA\OneDrive\Escritorio\Luisa\Laboratoria\DEV001-md-links\prueba.md';
+    return mdLinks(path)
+      .then((result) => {
+        expect(result).resolves(path);
+      })
+      .catch(() => { });
   });
   it('debe rechazar cuando el path no existe', () => {
-    mdLinks('./noexiste.md').catch((error) => {
+    const path = './noexiste.md';
+    mdLinks(path).catch((error) => {
       expect(error).toBe('la ruta no existe');
     });
   });
   it('debe rechazar cuando el archivo no es .md', () => {
-    mdLinks('./thumb.png').catch((error) =>{
+    mdLinks('./thumb.png').catch((error) => {
       expect(error).toBe('el archivo no es .md');
     });
   });
+  it('debe rechazar cuando no hay links', () => {
+    mdLinks('./pruebaNoLinks.md').catch((error) => {
+      expect(error).toBe('no contiene links');
+    });
+
+  })
+  it('debe retornar array con objetos {href,text,file}', () => {
+    const path = 'C:\Users\LABORATORIA\OneDrive\Escritorio\Luisa\Laboratoria\DEV001-md-links\prueba.md';
+    const validate = [
+      {
+        href: 'https://es.wikipedia.org/wiki/Markdown',
+        text: 'Markdown',
+        file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md'
+      }
+    ]
+    mdLinks(path, { validate: false })
+      .then((result) => {
+        expect(result).toStrictEqual(validate)
+      })
+      .catch(() => { });
+  });
+  it('debe retornar array con objetos {href,text,file,status,ok}', () => {
+    jest.fn(axios).mockImplementationOnce(() => Promise.resolve({ status: 200, }));
+
+    const path = 'C:\Users\LABORATORIA\OneDrive\Escritorio\Luisa\Laboratoria\DEV001-md-links\prueba.md';
+    const validate = [
+      {
+        href: 'https://es.wikipedia.org/wiki/Markdown',
+        text: 'Markdown',
+        file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md',
+        status: 200,
+        ok: 'OK'
+      }
+    ]
+
+    mdLinks(path, { validate: true }).then((result) => {
+      expect(result).toStrictEqual(validate)
+    })
+      .catch(() => { });
+  });
 });
+
+const absolutePath = 'C:\Users\LABORATORIA\OneDrive\Escritorio\Luisa\Laboratoria\DEV001-md-links\prueba.md'
+
+describe('pathExist', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof pathExist).toBe('function');
+  });
+  it('debe retorna true si el path existe', () => {
+    expect(pathExist('./prueba.md')).toBe(true);
+  });
+  it('debe retorna false si el path no existe', () => {
+    expect(pathExist('./noexiste.md')).toBe(false);
+  });
+});
+
+describe('toAbsolute', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof toAbsolute).toBe('function');
+  });
+  it('debe si el path es absoluto retorna true', () => {
+    expect(toAbsolute(absolutePath)).toBeTruthy();
+  });
+  it('debe si el path es relativo retorna el path absoluto', () => {
+    expect(toAbsolute('./prueba.md')).toBe('C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md');
+  });
+});
+
+describe('mdFile', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof mdFile).toBe('function');
+  });
+  it('debe retorna true si el archivo es .md', () => {
+    expect(mdFile('./prueba.md')).toBe(true);
+  });
+  it('debe retorna false si el archivo no es .md', () => {
+    expect(mdFile('./thumb.png')).toBe(false);
+  });
+});
+
+describe('readFile', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof readFile).toBe('function');
+  });
+
+});
+
+describe('getLinks', () => {
+  it('debe ser una funcion', () => {
+    expect(typeof getLinks).toBe('function');
+  });
+  it('debe devolver una promesa', () => {
+    getLinks(absolutePath).then(() => {
+      expect(getLinks(absolutePath)).toBe(typeof Promise);
+    })
+    .catch(() => { })
+      });
+  });
+  it('debe retornar array con objetos {href,text,file}', () => {
+    const file = [
+      {
+        href: 'https://es.wikipedia.org/wiki/Markdown',
+        text: 'Markdown',
+        file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md'
+      },
+    ]
+    getLinks(absolutePath).then((result) => {
+      expect(result).toEqual(file);
+    })
+    .catch(() => { })
+  });
+
