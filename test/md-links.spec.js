@@ -4,7 +4,7 @@ const {
   toAbsolute,
   mdFile,
   readFile,
-  getLinks } = require('../functions.js');
+  getLinks, } = require('../functions.js');
 const { axios } = require('axios');
 
 jest.mock('axios');

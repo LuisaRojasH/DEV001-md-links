@@ -28,7 +28,7 @@ const mdLinks = (path, options) => {
               // funcion para validar links
               validateLinks(arrayLinks).then((result) => {
                 resolve(result)
-              })
+              })   
             }
           };
         })
