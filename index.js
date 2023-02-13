@@ -6,6 +6,7 @@ const {
   getLinks,
 } = require('./functions')
 
+
 const mdLinks = (path, options) => {
   return new Promise((resolve, reject) => {
     // la ruta existe?
@@ -21,10 +22,14 @@ const mdLinks = (path, options) => {
           if (arrayLinks.length === 0) {
             reject('no contiene links');
           } else {
-            // funcion para validar links
-            validateLinks(arrayLinks).then((result) => {
-              resolve(result)
-            })
+            if (options === {validate:false}) {
+              resolve(arrayLinks)
+            } else {
+              // funcion para validar links
+              validateLinks(arrayLinks).then((result) => {
+                resolve(result)
+              })
+            }
           };
         })
 
