@@ -21,10 +21,9 @@ describe('validateLinks', () => {
             text: 'Markdown',
             file: 'C:\\Users\\LABORATORIA\\OneDrive\\Escritorio\\Luisa\\Laboratoria\\DEV001-md-links\\prueba.md',
             status: 200,
-            ok: 'OK'
         },
     ]
-        axios.get.mockResolvedValueOnce({ status: 200, ok: 'OK', })
+     axios.get.mockResolvedValue({ status: 200 })
         validateLinks(data).then((result) => {
             expect(result).toEqual(statusOk)
         });
